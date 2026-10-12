@@ -1,0 +1,8 @@
+# Ignore dependency folders anywhere in the project
+node_modules/
+
+# Ignore all environment files containing secrets
+.env
+.env.*
+# Keep your template visible so teammates know what variables to use
+!.env.example

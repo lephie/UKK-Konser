@@ -1,0 +1,16 @@
+
+Package : 
+npm install --save-dev nodemon
+npm install bcryptjs
+npm install mysql2 express
+npm install jsonwebtoken
+npm install sequelize
+
+Endpoints later : 
+Auth → 4 endpoints
+Super Admin → 13 endpoints
+Event Organizer → 18 endpoints
+User → 16 endpoints
+Gate Staff → 2 endpoints
+Total → around 53 endpoints
+
