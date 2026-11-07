@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
-import {error} from '../utils/response';
+import {error} from '../utils/response.js';
+import dotenv  from 'dotenv';
+
 dotenv.config();
 
 export const authMiddleware = (req, res, next ) => {
@@ -14,6 +16,10 @@ export const authMiddleware = (req, res, next ) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded
+
+        if (!user) return error(res, 'User no longer exists', 401);
+        if (!user.is_active) return error(res, 'Account deactivated', 403);
+
         next();
     } catch (error) {
         return error(res, 'Invalid or expired token.', 401)
@@ -22,4 +28,4 @@ export const authMiddleware = (req, res, next ) => {
 
 
 
-export default {authMiddleware};
+export default authMiddleware;

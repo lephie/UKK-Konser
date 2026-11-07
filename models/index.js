@@ -1,15 +1,14 @@
-import sequelize from "../config/database";
+import sequelize from "../config/database.js";
 
 
-import User from "./users.models";
-import Ticket from "./ticket.models";
-import TicketTier from "./ticket-tier.models";
-import OrderTicket from "./order-ticket.models";
-import OrderDetail from "./order-detail.models";
-import Notification from "./notification.models";
-import Concert from "./concert.models";
-import { forwardRef } from "react";
-import { TICK_CHAR } from "sequelize/lib/utils";
+import User from "./users.models.js";
+import Ticket from "./ticket.models.js";
+import TicketTier from "./ticket-tier.models.js";
+import OrderTicket from "./order-ticket.models.js";
+import OrderDetail from "./order-detail.models.js";
+import Notification from "./notification.models.js";
+import Concert from "./concert.models.js";
+
 
 
 // user 

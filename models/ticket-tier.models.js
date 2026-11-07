@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
-import Sequelize from 'sequelize';
+import sequelize from  '../config/database.js';
 
-const TicketTier = Sequelize.define('TicketTier', {
+const TicketTier = sequelize.define('TicketTier', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,

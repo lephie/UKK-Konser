@@ -3,42 +3,56 @@ import auth from '../middleware/auth.js';
 import User from '../models/users.models.js';
 import authService from '../services/auth.service.js';
 import {success, error} from '../utils/response.js';
+import { isEmail } from '../utils/validate.js';
 
 export const register = async (req , res) => {
     try {
-        const {name, email, phone, password, role} = req.body;
+        const body = req.body ?? {}; // not null shi
+        const missing = missingFields(body, ['name', 'email', 'password']); 
+        if (missing.length) return error(res, `Missing fields: ${missing.join(', ')}`, 400); // cek field 
 
-        const exist = await User.findOne({where : {email}})
-        if(exist) return error(res, "Email Already registered", 400);
+        const email = String(body.email).trim().toLowerCase(); // lowercase & blank shi
+        if (!isEmail(email)) return error(res, 'Invalid email format', 400); // check email dari isEmail pke regex shi
+        if (String(body.password).length < 6) return error(res, 'Password must be at least 6 characters', 400);
 
-        const hashed = await authService.hashPassword(password);
+        const exist = await User.findOne({ where: { email } });
+        if (exist) return error(res, 'Email already registered', 400);
 
-        const user = await User.create({name, email, phone, password: hashed, phone, role });
+        const hashed = await authService.hashPassword(String(body.password)); 
 
-        const {password: _, ...userData} = user.toJson();
-        return success(res, userData, 'Register success', 201);
+        const user = await User.create({
+            name: String(body.name).trim(),
+            email,
+            phone: body.phone ? String(body.phone).trim() : null,
+            password: hashed,
+            role: 'user'
+        });
+
+        return success(res, user.toSafeJSON(), 'Register success', 201);
     } catch (err) {
-        return error(res, err.message, 500)
+        return error(res, err.message, 500);
     }
-}
+};
 
 export const login = async (req, res) =>{
     try {
-        const {email, password} = req.body;
+        const body = req.body ?? {};
+        const missing = missingFields(body, ['email', 'password']);
+        if (missing.length) return error(res, `Missing fields: ${missing.join(', ')}`, 400);
 
-        const user = await user.findOne({where: {email}});
-        if(!user) return error (res, 'Email not found', 404);
+        const email = String(body.email).trim().toLowerCase();
+        const user = await User.findOne({ where: { email } });
 
-        if (!user.is_active) return error(res, "Account deactivated", 403);
+        
+        const match = user ? await authService.comparePassword(String(body.password), user.password) : false;
+        if (!match) return error(res, 'Email / password invalid', 401);
 
-        const match = await authService.comparePassword(password, user.password);
-        if(!match) return error(res, "Incorect Password", 401);
+        if (!user.is_active) return error(res, 'Account deactivated', 403);
 
-        const token = authService.generateToken({id: user.id, role: user.role});
-        return success(res, {token, role: user.role , name: user.name}, 'Login Successful')
-
+        const token = authService.generateToken({ id: user.id, role: user.role });
+        return success(res, { token, id: user.id, role: user.role, name: user.name }, 'Login successful');
     } catch (err) {
-        return error(res, err.message, 500)
+        return error(res, err.message, 500);
     }
 }
 

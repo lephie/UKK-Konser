@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
-import Sequelize from 'sequelize';
+import sequelize from  '../config/database.js';
 
 
-const Concert = Sequelize.define('Concert', {
+const Concert = sequelize.define('Concert', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -34,14 +34,12 @@ const Concert = Sequelize.define('Concert', {
   },
   status: {
     type: DataTypes.ENUM('draft', 'published', 'cancelled'),
-    allowNull: true
+    allowNull: true,
+    defaultValue: 'draft'
   },
   created_by: {
     type: DataTypes.INTEGER,
     allowNull: false
-  },
-  created_at : {
-    
   }
 }, {
   tableName: 'concert',

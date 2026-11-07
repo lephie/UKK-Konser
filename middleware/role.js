@@ -1,4 +1,4 @@
-import {error} from '../utils/response';
+import {error} from '../utils/response.js';
 
 
 export const roleMiddleware = (...allowedRoles) => {

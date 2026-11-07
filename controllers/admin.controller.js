@@ -1,5 +1,5 @@
-import { Concert, OrderTicket } from "../models";
-import User from "../models/users.models";
+import { Concert, OrderTicket } from "../models/index.js";
+import User from "../models/users.models.js";
 import {success, error} from '../utils/response.js';
 
 

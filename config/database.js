@@ -1,4 +1,3 @@
-import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import { Sequelize } from 'sequelize';
 
@@ -13,7 +12,7 @@ const sequelize = new Sequelize(
     {
         host : process.env.DB_HOST,
         dialect : 'mysql',
-        logging : true
+        logging : false // bisa console.log buat ap? gtw
 
 })
 
