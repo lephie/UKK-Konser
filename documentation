@@ -14,3 +14,9 @@ User → 16 endpoints
 Gate Staff → 2 endpoints
 Total → around 53 endpoints
 
+sequelize shit = 
+Op.gt: Greater than
+Op.gte: Greater than or equal to
+Op.lt: Less than
+Op.lte: Less than or equal to
+
