@@ -36,4 +36,9 @@ import { createNotifications } from "./notification.service.js";
         message: (o) => `Order #${o.id} has been cancelled.`
     });
 
+
+export const applyPaymentResult = async (payload) => {
+    const state = mapTransactionState
+}
+
 export default {cancelOrder, closePendingOrder, releaseQuota, sortedDetails}

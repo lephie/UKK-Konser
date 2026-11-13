@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import routes from './routes/index.js'
+import { error } from './utils/response.js';
 
 const app = express()
 

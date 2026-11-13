@@ -3,7 +3,7 @@ import auth from '../middleware/auth.js';
 import User from '../models/users.models.js';
 import authService from '../services/auth.service.js';
 import {success, error} from '../utils/response.js';
-import { isEmail } from '../utils/validate.js';
+import { isEmail, missingFields } from '../utils/validate.js';
 
 export const register = async (req , res) => {
     try {
@@ -28,7 +28,7 @@ export const register = async (req , res) => {
             role: 'user'
         });
 
-        return success(res, user.toSafeJSON(), 'Register success', 201);
+        return success(res, user, 'Register success', 201);
     } catch (err) {
         return error(res, err.message, 500);
     }
