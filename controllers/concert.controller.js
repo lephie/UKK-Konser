@@ -2,7 +2,7 @@ import { Op } from "sequelize";
 import { Concert, User, TicketTier, OrderTicket } from "../models/index.js";
 import {success, error} from "../utils/response.js";
 import {cancelOrder} from "../services/order.service.js"
-import { dateValidate } from "../utils/validate.js";
+import { dateValidate, missingFields } from "../utils/validate.js";
 import { getPagination, paginated } from "../utils/pagination.js";
 import { findOwnedConcert, presentConcert } from "../services/concert.service.js";
 import { notifyMany } from "../services/notification.service.js";
@@ -72,6 +72,33 @@ export const getConcertById = async (req, res) => {
         return error(res, err.message, 500);
     }
 };
+
+export const createConcert = async (req, res) => {
+    try {
+        const body = req.body ?? {};
+        const missing = missingFields(body, ['title', 'venue', 'location', 'date']);
+        if(missing.length) return error(res, `Missing fields: ${missing.join(', ')}`, 400);
+
+        const date = dateValidate(body.date);
+        if(!date) return error(res, 'date is not valid date', 400);
+        if(date <= new Date()) return error(res, 'Concert date must be in the future', 400);
+
+        const concert = await Concert.create({
+            title: String(body.title).trim(),
+            description: body.description ?? null,
+            venue: String(body.venue).trim(),
+            location: String(body.location).trim(),
+            date,
+            banner_url: body.banner_url ?? null,
+            status: 'draft',
+            created_by: req.user.id
+        });
+
+        return success(res, concert, 'Concert created as draft', 201);
+    } catch (err) {
+        return error(res, err.message, 500)
+    }
+}
 
 // fitur fitur EOEOEOEO
 

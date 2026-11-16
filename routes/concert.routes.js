@@ -1,7 +1,8 @@
-import { Router } from 'express';
 import { getAllConcert, getConcertById } from '../controllers/concert.controller.js';
+import express from 'express';
 
-const router = Router();
+
+const router = express.Router()
 
 // public: anybody can browse published concerts
 router.get('/', getAllConcert);

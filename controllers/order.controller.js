@@ -2,9 +2,9 @@ import { Op } from "sequelize";
 import { Concert, OrderDetail, OrderTicket, sequelize, TicketTier } from "../models/index.js";
 import { toPositiveInt } from "../utils/validate.js";
 import {success, error} from '../utils/response.js';
-
-
-
+import HttpError from "../utils/HttpError.js";
+import { getPagination } from "../utils/pagination.js";
+import { cancelTransactions } from "../services/payment.service.js";
 
 const orderInclude = [{
     model: OrderDetail,
@@ -119,3 +119,49 @@ export const createOrder = async (req, res) => {
      return error(res, err.message, err.status || 500);
     }
 } 
+
+export const getMyOrders = async (req, res) => {
+    try {
+        const {page, limit, offset} = getPagination(req, query)
+        const where = {user_id: req.user.id};
+        if(req.query.status) where.status = req.query.status;
+
+        const {rows, count} = await OrderTicket.findAndCountAll({
+            where, 
+            include: orderInclude,
+            order: [['created_at', 'DESC']],
+            distinct: true,
+            limit,
+            offset
+        });
+        return success(res, paginated(rows.map(withTimer), count, page, limit ), 'Order fetched');
+    } catch (err) {
+        return error(res, err.message, 500)
+    }
+}
+
+export const getOrderById = async (req, res) => {
+    return success(res, withTimer(req.order), 'Order Fetched')
+}
+
+export const cancelOrder = async (req, res) => {
+    try {
+        const order = req.order;
+        if(order.status !== 'pending') return error(res, `Order is already ${order.status}`, 400);
+
+        await cancelPendingOrder(order.id);
+
+        if(order.payment_ref){
+            try {
+                await cancelTransactions(order.payment_ref);
+            } catch (err) {
+                // someone said nothing to cancel in midtrans
+            }
+        }
+
+        const fresh = await OrderTicket.findByPk(order.id, {include: orderInclude});
+        return success(res, withTimer(fresh), 'Order Cancelled')
+    } catch (err) {
+        return error(res, err.message, 500)
+    }
+}

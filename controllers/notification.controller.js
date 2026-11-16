@@ -1,6 +1,6 @@
 import { Notification } from "../models/index.js";
 import { getPagination, paginated } from "../utils/pagination.js"
-import { success, error } from "../utils/response";
+import { success, error } from "../utils/response.js";
 
 
 export const getNotification = async (req, res) => {

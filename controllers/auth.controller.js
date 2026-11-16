@@ -1,5 +1,3 @@
-
-import auth from '../middleware/auth.js';
 import User from '../models/users.models.js';
 import authService from '../services/auth.service.js';
 import {success, error} from '../utils/response.js';
@@ -57,6 +55,9 @@ export const login = async (req, res) =>{
 }
 
 // get current user / ambil data user sekarang
+export const logout = async (req, res) => {
+    return success(res, null, 'Logout successful, please delete the token on the client');
+};
 
 export const getMe = async (req, res) =>{
     try {
@@ -69,4 +70,25 @@ export const getMe = async (req, res) =>{
     }
 }
 
-export default {register, login, getMe}
+export const changePassword = async (req, res) => {
+    try {
+        const body = req.body ?? {};
+        const missing = missingFields(body, ['old_password', 'new_password']);
+        if (missing.length) return error(res, `Missing fields: ${missing.join(', ')}`, 400);
+        if (String(body.new_password).length < 6) return error(res, 'New password must be at least 6 characters', 400);
+
+        const user = await User.findByPk(req.user.id);
+        const match = await authService.comparePassword(String(body.old_password), user.password);
+        if (!match) return error(res, 'Old password is incorrect', 400);
+
+        user.password = await authService.hashPassword(String(body.new_password));
+        await user.save();
+
+        return success(res, null, 'Password changed successfully');
+    } catch (err) {
+        return error(res, err.message, 500);
+    }
+};
+
+
+export default {register, login, getMe, logout, changePassword }

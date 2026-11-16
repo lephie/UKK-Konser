@@ -1,7 +1,5 @@
-import { toDefaultValue } from "sequelize/lib/utils";
-import { Ticket } from "../models";
-import { findOwnedConcert } from "../services/concert.service";
-import { success } from "../utils/response";
+import { Ticket, Concert, TicketTier, User } from "../models/index.js";
+import { findOwnedConcert } from "../services/concert.service.js";
 import {success, error} from '../utils/response.js';
 
 
@@ -52,7 +50,6 @@ export const scanTicket = async (req, res) => {
 }
 
 export const getCheckinCount = async (res, req) => {
-   
    try {
        const concert = await findOwnedConcert(req.params.id, req.user.id);
               if(!concert) return error(res, 'Concert not found', 404);

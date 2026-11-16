@@ -1,4 +1,3 @@
-import { verify } from "jsonwebtoken";
 import OrderTicket from "../models/order-ticket.models.js";
 import { applyPaymentResult } from "../services/order.service.js";
 import { createSnapTransaction, getTransactionStatus, redirectUrl, verifySignature } from "../services/payment.service.js";

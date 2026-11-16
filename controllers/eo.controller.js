@@ -1,5 +1,5 @@
 import { Concert, OrderDetail, OrderTicket, Ticket, TicketTier, User } from "../models/index.js";
-import { findOwnedConcert } from "../services/concert.service";
+import { findOwnedConcert } from "../services/concert.service.js";
 import { getPagination, paginated } from "../utils/pagination.js";
 import { success, error } from "../utils/response.js"
 

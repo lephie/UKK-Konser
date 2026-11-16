@@ -1,11 +1,12 @@
-import { config } from "dotenv"
-import midtransClient from "midtrans-client"
+import crypto from 'crypto';
+import midtransClient from "midtrans-client";
+import config from "../config/env.js";
 
 const {serverKey, clientKey, isProduction } = config.midtrans;
 
 // 2 api midtrasn : snap & core 
 const snap = new midtransClient.Snap({isProduction, serverKey, clientKey}); 
-const core = new midtransClient.Core({isProduction, serverKey, clientKey})
+const core = new midtransClient.CoreApi({isProduction, serverKey, clientKey})
 
 export const redirectUrl = (token) => 
     `${isProduction ? 'https://app.midtrans.com' : 'https://app.sandbox.midtrans.com'}/snap/v2/vtweb/${token} `;
@@ -79,7 +80,11 @@ export const getTransactionStatus = (paymentRef) => core.transaction.status(paym
 
 export const cancelTransactions = (paymentRef) => core.transaction.cancel(paymentRef);
 
+export const snapRedirectUrl = (token) =>
+    `${isProduction ? 'https://app.midtrans.com' : 'https://app.sandbox.midtrans.com'}/snap/v2/vtweb/${token}`;
+
+
 export default {
     mapTransactionState, redirectUrl, getTransactionStatus,
-    verifySignature, cancelTransactions, createSnapTransaction
+    verifySignature, cancelTransactions, createSnapTransaction, snapRedirectUrl
 }
