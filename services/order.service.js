@@ -30,7 +30,7 @@ import { createNotifications } from "./notification.service.js";
     })
 
 
- const cancelOrder = (orderId) => 
+export const cancelOrder = (orderId) => 
     closePendingOrder(orderId, 'cancelled', {
         title: 'Order cancelled',
         message: (o) => `Order #${o.id} has been cancelled.`
