@@ -47,9 +47,39 @@ export const createSnapTransaction = async ({paymentRef, order, user, items, exp
             gross_amount: grossAmount
         },
         items_details: itemsDetails,
-    }
+        costumer_details: {
+            first_name: user.name,
+            email: user.email,
+            phone: user.phone || undefined
+        },
+        expiry: {
+            unit: 'minutes',
+            duration: expiryMinutes
+        }
+    };
+    const result = await snap.createTransaction(parameter);
+    return {token: result.token, redirectUrl: result.redirect_url, grossAmount: grossAmount}
 }
 
+export const verifySignature = (body = {}) => {
+    const {order_id, status_code, gross_amount, signature_key} = body;
+    if(!order_id || !status_code || !gross_amount || !signature_key) return false;
+
+    const expected = 
+    crypto.createHash('sha512')
+    .update(`${order_id}${status_code}${gross_amount}${signature_key}`)
+    .digest('hex');
+
+    const a = Buffer.from(expected);
+    const b = Buffer.from(String(signature_key));
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
+};
+
+export const getTransactionStatus = (paymentRef) => core.transaction.status(paymentRef);
+
+export const cancelTransactions = (paymentRef) => core.transaction.cancel(paymentRef);
+
 export default {
-    mapTransactionState, redirectUrl
+    mapTransactionState, redirectUrl, getTransactionStatus,
+    verifySignature, cancelTransactions, createSnapTransaction
 }

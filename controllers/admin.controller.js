@@ -44,7 +44,7 @@ export const statusUser = async (req, res) => {
         const status = user.is_active ? 'activated' : 'deactivated' ;
         return success(res, {id: user.id, is_active: user.is_active}, `User ${status} Succesfully`)
 
-    } catch (error) {
+    } catch (err) {
         return error(res, error.message, 500)
     }
 }
@@ -108,7 +108,7 @@ export const approveEO = async (req, res) => {
 
         return success(res, {id: eo.id, is_active: eo.is_active}, 'Event Organizer Approved')
 
-    } catch (error) {
+    } catch (err) {
         return error(res, error.message, 500)
     }
 }
@@ -126,7 +126,7 @@ export const rejectEO = async (req, res) => {
         await eo.save();
 
         return success(res, {id: eo.id, is_active: eo.is_active}, 'Event Organizer Rejected')
-    } catch (error) {
+    } catch (err) {
         return error(res, error.message, 500)
     }
 }

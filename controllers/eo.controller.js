@@ -1,7 +1,7 @@
 import { Concert, OrderDetail, OrderTicket, Ticket, TicketTier, User } from "../models/index.js";
 import { findOwnedConcert } from "../services/concert.service";
 import { getPagination, paginated } from "../utils/pagination.js";
-import { success } from "../utils/response.js"
+import { success, error } from "../utils/response.js"
 
 export const getProfile = async (req, res) => {
     return success(res, req.user, 'Profile fetched')
@@ -189,7 +189,7 @@ export const getConcertReport = async (req, res) => {
             tiers: perTier
         }, 'Report fetched');
 
-    } catch (error) {
+    } catch (err) {
         console.error(res, err.message, 500)
     }
 }

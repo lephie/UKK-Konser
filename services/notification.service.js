@@ -1,4 +1,4 @@
-import { Notification } from "../models"
+import { Notification } from "../models/index.js"
 
 export const createNotifications = (userId, title, message, options = {}) =>
     Notification.create({user_id: userId, title, message}, options);

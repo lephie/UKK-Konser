@@ -7,6 +7,11 @@ export const isEmail = (value) => typeof value === 'string' && EMAIL_REGEX.test(
 export const missingFields = (body, fields) =>
     fields.filter((f) => body[f] === undefined || body[f] === null || String(body[f]).trim() === '');
 
+export const toPositiveInt = (value) =>{
+    const n = Number(value);
+    return Number.isInteger(n) && n > 0 ? n : null
+}
+
 export const dateValidate = (value) =>{
     if(value == undefined || value == null || value == '' ) return null;
     const d = new Date(value);

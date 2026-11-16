@@ -20,3 +20,23 @@ Op.gte: Greater than or equal to
 Op.lt: Less than
 Op.lte: Less than or equal to
 
+
+dumy data EO 
+INSERT INTO users (name, email, password, phone, role, is_active)
+SELECT 'Nusantara Live', 'eo@nusantaralive.com', '$2a$12$oMkoFAxRpVqDixo1f2y59efkig1YP9ZaBOi2D4/N8oWmMBuPVGuiS', '081234567890', 'event_organizer', true
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE role = 'event_organizer');
+
+SET @eo = (SELECT id FROM users WHERE role = 'event_organizer' ORDER BY id LIMIT 1);
+
+dummy data concert
+
+INSERT INTO concert (title, description, venue, location, date, banner_url, status, created_by, created_at) VALUES
+('Nassar Tour 2026', 'Konser tunggal Nassar dalam rangka tur nasional 2026 dengan lagu-lagu terbaik dan special performance.', 'Jakarta International Stadium', 'Jakarta', '2026-12-20 19:00:00', 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=800', 'published', @eo, NOW()),
+('Electronic Fest 2026', 'Festival musik elektronik terbesar dengan DJ lokal dan internasional.', 'Sasana Budaya Ganesha', 'Bandung', '2026-12-27 18:00:00', 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800', 'published', @eo, NOW()),
+('Jazz Night', 'Malam tenang dengan alunan musik jazz, cocok untuk bersantai bersama teman dan keluarga.', 'Grand City Convention Hall', 'Surabaya', '2027-01-09 20:00:00', 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800', 'published', @eo, NOW()),
+('Rock Revolution', 'Revolusi musik rock hadir kembali dengan band-band rock legendaris Indonesia.', 'Lapangan Kridosono', 'Yogyakarta', '2027-01-23 19:30:00', 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800', 'published', @eo, NOW()),
+('Pop Music Festival', 'Festival musik pop dengan deretan penyanyi papan atas. Masih tahap persiapan.', 'Istora Senayan', 'Jakarta', '2027-02-06 17:00:00', 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800', 'draft', @eo, NOW()),
+('EDM Night Bali', 'Malam penuh energi dengan musik EDM di tepi pantai, lineup spesial menanti.', 'GWK Cultural Park', 'Bali', '2027-02-20 20:00:00', 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800', 'published', @eo, NOW()),
+('Senandung Pantai Live', 'Konser akustik santai dengan suasana pantai dan musisi indie pilihan.', 'Pantai Losari Open Stage', 'Makassar', '2027-03-06 16:00:00', 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800', 'published', @eo, NOW()),
+('Langit Senja Music Festival', 'Festival musik multi-genre menjelang senja bersama puluhan penampil.', 'Lapangan Gasibu', 'Bandung', '2026-11-22 15:00:00', 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=800', 'cancelled', @eo, NOW());
+

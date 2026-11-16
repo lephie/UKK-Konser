@@ -2,6 +2,7 @@ import { toDefaultValue } from "sequelize/lib/utils";
 import { Ticket } from "../models";
 import { findOwnedConcert } from "../services/concert.service";
 import { success } from "../utils/response";
+import {success, error} from '../utils/response.js';
 
 
 export const scanTicket = async (req, res) => {
