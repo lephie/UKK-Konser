@@ -21,7 +21,7 @@ export const authMiddleware = (req, res, next ) => {
         if (!user.is_active) return error(res, 'Account deactivated', 403);
 
         next();
-    } catch (error) {
+    } catch (err) {
         return error(res, 'Invalid or expired token.', 401)
     }
 }
