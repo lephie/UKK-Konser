@@ -1,6 +1,6 @@
-import { fn } from "sequelize";
+import { Op, fn, col } from 'sequelize';
 import { Concert, OrderDetail, OrderTicket, Ticket, TicketTier, User } from "../models/index.js";
-import { findOwnedConcert } from "../services/concert.service.js";
+import { findOwnedConcert, presentTier } from "../services/concert.service.js";
 import { getPagination, paginated } from "../utils/pagination.js";
 import { success, error } from "../utils/response.js"
 

@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-import { Concert, User, TicketTier, OrderTicket } from "../models/index.js";
+import { Concert, User, TicketTier, OrderTicket, Ticket } from "../models/index.js";
 import {success, error} from "../utils/response.js";
 import {cancelOrder} from "../services/order.service.js"
 import { dateValidate, missingFields } from "../utils/validate.js";

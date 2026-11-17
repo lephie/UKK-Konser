@@ -1,9 +1,10 @@
-import { col, fn } from "sequelize";
-import { Concert, OrderTicket } from "../models/index.js";
-import User from "../models/users.models.js";
-import { getPagination, paginated } from "../utils/pagination.js";
-import {success, error} from '../utils/response.js';
-import { isEmail } from "../utils/validate.js";
+import { Op, fn, col } from 'sequelize';
+import { User, Concert, TicketTier, OrderTicket, Ticket } from '../models/index.js';
+import authService from '../services/auth.service.js';
+import { success, error } from '../utils/response.js';
+import { getPagination, paginated } from '../utils/pagination.js';
+import { isEmail, missingFields } from '../utils/validate.js';
+import { presentConcert } from '../services/concert.service.js';
 
 
 export const getAllUser = async (req, res) => {
