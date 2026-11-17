@@ -1,4 +1,4 @@
-    import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
     import { error } from '../utils/response.js';
     import dotenv from 'dotenv';
     import User from '../models/users.models.js';
@@ -35,4 +35,4 @@
         }
     };
 
-    export default authMiddleware;
+    export default authMiddleware; 
