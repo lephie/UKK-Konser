@@ -1,13 +1,15 @@
-import {error} from '../utils/response.js';
-
+import { error } from '../utils/response.js';
 
 export const roleMiddleware = (...allowedRoles) => {
-    return (req, res, next ) =>{
-        if(!allowedRoles.includes(req, user.role)){
-            return error(res, "Unauthorized", 403)
-        }
-        next()
-    }
-}
+    return (req, res, next) => {
+        const user = req.user;
 
-export default (roleMiddleware)
+        if (!user || !allowedRoles.includes(user.role)) {
+            return error(res, "Unauthorized", 403);
+        }
+
+        next();
+    };
+};
+
+export default roleMiddleware;

@@ -14,4 +14,6 @@ export const error = (res, message = 'error', code = 400) =>{
     })
 }
 
+
+
 export default {success, error}
