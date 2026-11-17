@@ -1,10 +1,26 @@
 import { Concert } from "../models/index.js";
 
 export const presentConcert = (concert) =>{
-    const c = typeof concert.get === 'function' ? concert.get({ plain: true }) : concert;
-    if(Array.isArray(c.tiers)) c.tiers = c.tiers.map(presentTier);
-    return c ;
-}
+    const c = typeof concert.get === 'function'
+        ? concert.get({ plain: true })
+        : concert;
+
+    if (Array.isArray(c.tiers)) {
+        c.tiers = c.tiers.map(presentTier);
+    }
+
+    const prices = (c.tiers ?? [])
+        .map(tier => Number(tier.price))
+        .filter(price => Number.isFinite(price));
+
+    return {
+        ...c,
+        starting_price: prices.length
+            ? Math.min(...prices)
+            : null
+    };
+}; 
+
 
 export const presentTier = (tier) =>{
     const t = typeof tier.get === 'function' ? tier.get({plain: true}) : tier;
