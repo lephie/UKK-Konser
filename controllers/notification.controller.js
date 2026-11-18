@@ -7,7 +7,7 @@ export const getNotification = async (req, res) => {
     try {
         const {page, limit, offset} = getPagination(req.query, 20);
         const where = {user_id: req.user.id};
-        if(req.query.unread === 'true') where.is_read === false;
+        if(req.query.unread === 'true') where.is_read = false;
 
         const {rows, count} = await Notification.findAndCountAll({
             where,

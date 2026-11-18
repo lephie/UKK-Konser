@@ -9,7 +9,7 @@ const snap = new midtransClient.Snap({isProduction, serverKey, clientKey});
 const core = new midtransClient.CoreApi({isProduction, serverKey, clientKey})
 
 export const redirectUrl = (token) => 
-    `${isProduction ? 'https://app.midtrans.com' : 'https://app.sandbox.midtrans.com'}/snap/v2/vtweb/${token} `;
+    `${isProduction ? 'https://app.midtrans.com' : 'https://app.sandbox.midtrans.com'}/snap/v2/vtweb/${token}`;
 
 export const mapTransactionState = ({transaction_status, fraud_status} = {}) => {
     switch (transaction_status) {
@@ -47,14 +47,14 @@ export const createSnapTransaction = async ({paymentRef, order, user, items, exp
             order_id: paymentRef,
             gross_amount: grossAmount
         },
-        items_details: itemsDetails,
-        costumer_details: {
+        item_details: itemsDetails,
+        costomer_details: {
             first_name: user.name,
             email: user.email,
             phone: user.phone || undefined
         },
         expiry: {
-            unit: 'minutes',
+            unit: 'minute',
             duration: expiryMinutes
         }
     };
@@ -68,7 +68,7 @@ export const verifySignature = (body = {}) => {
 
     const expected = 
     crypto.createHash('sha512')
-    .update(`${order_id}${status_code}${gross_amount}${signature_key}`)
+    .update(`${order_id}${status_code}${gross_amount}${serverKey}`)
     .digest('hex');
 
     const a = Buffer.from(expected);

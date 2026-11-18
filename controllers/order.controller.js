@@ -33,8 +33,8 @@ export const createOrder = async (req, res) => {
         
         const wanted = new Map();
         for(const item of items) {
-            const tierId = toPositiveInt(items?.ticket_tier_id);
-            const qty = toPositiveInt(items?.quantity);
+            const tierId = toPositiveInt(item?.ticket_tier_id);
+            const qty = toPositiveInt(item?.quantity);
             if(!tierId || !qty) {
             return error(res, 'Each item needs a valid ticket_tier_id and a quantity (whole number, at least 1)', 400);
             }
@@ -48,7 +48,7 @@ export const createOrder = async (req, res) => {
 
         const created = await sequelize.transaction(async (t) => {
             const concert = await Concert.findByPk(concertId, {transaction: t});
-            if(!concert || concert.status !== 'pubilished') throw new HttpError(404, 'Concert not found or not on sale');
+            if(!concert || concert.status !== 'published') throw new HttpError(404, 'Concert not found or not on sale');
             if(new Date(concert.date) <= new Date()) throw new HttpError(400, 'This concert already started or finished');
 
             const now = new Date();
@@ -57,7 +57,7 @@ export const createOrder = async (req, res) => {
                 where: {user_id: req.user.id, status: 'pending', expires_at: {[Op.gt]: now}},
                 transaction: t
             });
-            if(openOrders >= concert.order.maxPendingOrder) {
+            if(openOrders >= concert.order.maxPendingOrders) {
                 throw new HttpError(400, 'You have to many unpaid orders, pay or cancel the unpaid one first');
             }
 

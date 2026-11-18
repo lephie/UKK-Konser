@@ -13,24 +13,24 @@ export const updateProfile = async (req, res) => {
         const body = req.body ?? {};
         const updated = {};
 
-        if(body.name === undefined){
+        if(body.name !== undefined){
             if(!String(body.name).trim()) return error(res, 'name cannot be emptu', 400)
                 updated.name = String(body.name).trim();
         }
-        if(body.phone === undefined) updated.phone = body.phone ? String(body.phone).trim() : null;
+        if(body.phone !== undefined) updated.phone = body.phone ? String(body.phone).trim() : null;
         if(Object.keys(updated).length === 0) return error(res, 'Nothing to update', 400);
 
         const user = await User.findByPk(req.user.id);
         await user.update(updated)
         return success(res, user.toSafeJSON(), 'Profile updated');
     } catch (err) {
-        console.error(res, err.message, 500)
+         return error(res, err.message, 500)
     }
 }
 
 export const getDashboard = async (req, res) => {
     try {
-        const concert = Concert.findAll({where: {created_by: req.user.id}, attributes: ['id', 'status']});
+        const concert = await Concert.findAll({where: {created_by: req.user.id}, attributes: ['id', 'status']});
         const ids = concert.map((c) => c.id);
 
         const byStatus = {draft: 0, published: 0, cancelled: 0};
@@ -79,11 +79,11 @@ export const getConcertOrder = async (req,res) => {
         const {rows, count } = await OrderTicket.findAndCountAll({
             where,
             include: [
-                {model: User, as: 'user', attributes: ['id','names','phone','email']},
+                {model: User, as: 'user', attributes: ['id','name','phone','email']},
                 {
                     model: OrderDetail,
                     as: 'details',
-                    include: [{models: TicketTier, as: 'tier', attributes: ['id', 'name']}]
+                    include: [{model: TicketTier, as: 'tier', attributes: ['id', 'name']}]
                 }
             ],
             order: [['created_at', 'DESC']],
@@ -121,7 +121,7 @@ export const getAttendees = async (req, res) => {
         });
         return success(res, paginated(rows, count, page, limit), 'Atendees fetched')
     } catch (err) {
-        console.error(res, err.message, 500)   
+        return error(res, err.message, 500)   
     }
 } 
 
@@ -191,6 +191,6 @@ export const getConcertReport = async (req, res) => {
         }, 'Report fetched');
 
     } catch (err) {
-        console.error(res, err.message, 500)
+        return error(res, err.message, 500)
     }
 }

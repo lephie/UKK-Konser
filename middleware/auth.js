@@ -23,7 +23,10 @@ import jwt from 'jsonwebtoken';
         }
 
         try {
-            const user = await User.findByPk(decoded.id); 
+            const user = await User.findByPk(decoded.id, {
+                attributes: {exclude: ['password']}
+            }); 
+
             if (!user) return error(res, 'User no longer exists', 401);
             if (!user.is_active) return error(res, 'Account deactivated', 403);
 

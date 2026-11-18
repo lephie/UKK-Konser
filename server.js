@@ -1,6 +1,7 @@
 import config from './config/env.js';
 import app from './app.js';
 import { sequelize } from './models/index.js';
+import { startOrderExpiryJob } from './jobs/orderExpiry.job.js';
 
 const start = async () => {
     try {
@@ -11,7 +12,7 @@ const start = async () => {
             console.log(`Server running on http://localhost:${config.port}`);
         });
 
-
+        startOrderExpiryJob()
     } catch (err) {
         console.error('Unable to start the server:', err.message);
         process.exit(1);

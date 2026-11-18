@@ -1,4 +1,4 @@
-import User from '../models/users.models.js';
+import { User } from '../models/index.js';
 import authService from '../services/auth.service.js';
 import {success, error} from '../utils/response.js';
 import { isEmail, missingFields } from '../utils/validate.js';
@@ -26,7 +26,7 @@ export const register = async (req , res) => {
             role: 'user'
         });
 
-        return success(res, user, 'Register success', 201);
+        return success(res, user.toSafeJSON(), 'Register success', 201);
     } catch (err) {
         return error(res, err.message, 500);
     }
@@ -59,16 +59,10 @@ export const logout = async (req, res) => {
     return success(res, null, 'Logout successful, please delete the token on the client');
 };
 
-export const getMe = async (req, res) =>{
-    try {
-        const user = await user.findByPk(req.user.id, {
-            attribute: {exlude: ['password']}
-        })
-        return success(res, user, 'user fetched')
-    } catch (err) {
-        return error(res, err.message, 500);   
-    }
-}
+export const getMe = async (req, res) => {
+    // authMiddleware already loaded the user (without the password)
+    return success(res, req.user, 'User fetched');
+};
 
 export const changePassword = async (req, res) => {
     try {

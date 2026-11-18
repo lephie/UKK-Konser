@@ -40,7 +40,7 @@ const Concert = sequelize.define('Concert', {
   created_by: {
     type: DataTypes.INTEGER,
     allowNull: false
-  }
+  },
 }, {
   tableName: 'concert',
   timestamps: true,
@@ -48,4 +48,4 @@ const Concert = sequelize.define('Concert', {
   updatedAt: false  // your SQL has no updated_at on this table
 });
 
-export default Concert
+export default Concert;

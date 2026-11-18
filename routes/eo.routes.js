@@ -37,6 +37,6 @@ router.delete('/tiers/:id', deleteTier);
 //order dll
 router.get('/concerts/:id/orders', getConcertOrder);
 router.get('/concerts/:id/attendees', getAttendees);
-router.get('/concert/:id/report', getConcertReport);
+router.get('/concerts/:id/report', getConcertReport);
 
 export default router

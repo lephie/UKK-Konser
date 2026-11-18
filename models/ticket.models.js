@@ -35,7 +35,7 @@ const Ticket = sequelize.define('Ticket', {
     type: DataTypes.DATE,
     allowNull: true
   },
-  check_out_by: {
+  checked_in_by: {
     type: DataTypes.INTEGER,
     allowNull: false  // this is the gate staff user id
   }

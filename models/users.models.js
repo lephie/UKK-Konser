@@ -36,7 +36,12 @@ const User = sequelize.define('User', {
   tableName: 'users',
   timestamps: true,
   createdAt: 'created_at',
-  updatedAt: false
+  updatedAt: 'updated_at'
 });
+
+User.prototype.toSafeJSON = function () {
+    const { password, ...rest } = this.toJSON();
+    return rest;
+};
 
 export default User

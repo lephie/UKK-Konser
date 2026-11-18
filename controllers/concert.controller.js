@@ -23,12 +23,12 @@ export const getAllConcert = async (req, res) => {
         if(date_to){
             const to = dateValidate(date_to)
             if(to == undefined) return error(res, "date_to not valid date", 400);
-            dateFilter[Op.lte] // less than / equal <=
+            dateFilter[Op.lte] = to; // less than / equal <=
         }
 
         const where = {status: 'published', date: dateFilter};
         if(search){
-            where[Op.like] = [
+            where[Op.or] =[
                 {title:         {[Op.like]: `%${search}%`}},
                 {description:   {[Op.like]: `%${search}%`}},
                 {venue:         {[Op.like]: `%${search}%`}}
@@ -110,7 +110,7 @@ export const getMyConcert = async (req, res) =>{
 
         const {rows, count} = await Concert.findAndCountAll({
             where, 
-            include: [{model: TicketTier, as: 'tiers', attributes: ['id', 'names', 'price', 'quota', 'sold']}],
+            include: [{model: TicketTier, as: 'tiers', attributes: ['id', 'name', 'price', 'quota', 'sold']}],
             order: [['created_at', 'DESC']],
             distinct: true,
             limit,
@@ -205,11 +205,11 @@ export const publishConcert = async (req, res) =>{
 
 export const cancelConcert = async (res, req) =>{
     try {
-        const concert = findOwnedConcert(req.params.id, req.user.id)
+        const concert = await findOwnedConcert(req.params.id, req.user.id)
         if(!concert) return error(res, 'Concert not found', 404);
         if(concert.status === 'cancelled') return error(res, 'Concert already cancelled', 400);
 
-        const wasPublished = concert.status = 'published';
+        const wasPublished = concert.status === 'published';
         
         // update ke cancel status
         await concert.update({status: 'cancelled'});
@@ -240,7 +240,7 @@ export const cancelConcert = async (res, req) =>{
         return success(res, concert, 'Concert cancelled');
 
     } catch (err) {
-        console.error(res, err.message, 500)
+        return error(res, err.message, 500)
     }
 }
 
@@ -255,7 +255,7 @@ export const deleteConcert = async (res, req) =>{
         await concert.destroy();
         return success(res, null, 'Concert Deleted');
     } catch (err) {
-        console.error(res, err.message, 500)
+        return error(res, err.message, 500)
     }
 }
 

@@ -1,12 +1,10 @@
 import sequelize from "../config/database.js";
-
-
-import User from "./users.models.js";
 import Ticket from "./ticket.models.js";
 import TicketTier from "./ticket-tier.models.js";
 import OrderTicket from "./order-ticket.models.js";
 import OrderDetail from "./order-detail.models.js";
 import Notification from "./notification.models.js";
+import User from "./users.models.js";
 import Concert from "./concert.models.js";
 
 
@@ -56,4 +54,15 @@ export {
   OrderDetail,
   Ticket,
   Notification
-}
+};
+
+export default {
+  sequelize,
+  User,
+  Concert,
+  TicketTier,
+  OrderTicket,
+  OrderDetail,
+  Ticket,
+  Notification
+};

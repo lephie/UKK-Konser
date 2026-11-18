@@ -9,7 +9,7 @@ export const scanTicket = async (req, res) => {
         if(!qrCode) return error(res, 'qr code is required', 400);
 
         const ticket = await Ticket.findOne({
-            where: {qrCode},
+            where: {qr_code: qrCode},
             include: [
                 { model: Concert, as: 'concert', attributes: ['id', 'title', 'date', 'status', 'created_by'] },
                 { model: TicketTier, as: 'tier', attributes: ['id', 'name'] },
@@ -45,7 +45,7 @@ export const scanTicket = async (req, res) => {
             check_in_at: checkInAt
         }, 'Valid ticket: entry granted');
     } catch (err) {
-        console.error(res, err.message, 500)
+        return error(res, err.message, 500)
     }
 }
 
@@ -55,7 +55,7 @@ export const getCheckinCount = async (res, req) => {
               if(!concert) return error(res, 'Concert not found', 404);
            
            // fitur cek tiket yang udah di checkin dan belum, lalu total tiket berapa (totalvalidticket)
-           const [checkIn, notYet] = await Promise.all([
+           const [checkedIn, notYet] = await Promise.all([
                Ticket.count({where: {concert_id: concert.id, status: 'used'}}),
                Ticket.count({where: {concert_id: concert.id, status: 'unused'}})
            ])
@@ -63,12 +63,12 @@ export const getCheckinCount = async (res, req) => {
            return success(res, {
                concert_id: concert.id,
                title: concert.title,
-               checked_in: checkIn,
+               checked_in: checkedIn,
                not_arriving_yet: notYet,
-               total_valid_ticket: checkIn + notYet
+               total_valid_ticket: checkedIn + notYet
            },'Chekin count fetched');
    } catch (err) {
-    console.error(res, err.message, 500)
+    return error(res, err.message, 500)
     } 
 
 } 
