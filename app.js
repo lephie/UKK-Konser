@@ -7,6 +7,9 @@ const app = express()
 
 app.use(cors())
 app.use(express.json())
+app.use((req, res, next) => {
+    next();
+});
 
 app.get('/health', (req, res) => res.json({status: 'ok'}))
 

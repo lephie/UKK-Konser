@@ -59,14 +59,14 @@ export const checkStatus = async (req, res) => {
                 const payload = await getTransactionStatus(order.payment_ref)
                 await applyPaymentResult(payload)
             } catch (error) {
-                
+            console.error('[status] ERROR:', err.httpStatusCode, err.message);
             }
         }
 
         const fresh = await OrderTicket.findByPk(order.id);
         return success(res, {
             order_id: fresh.id,
-            order_status: fresh.status,
+            status: fresh.status,
             payment_method: fresh.payment_method,
             expires_at: fresh.expires_at
         }, 'Order status fetched');

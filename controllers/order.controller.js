@@ -16,7 +16,7 @@ const orderInclude = [{
 ];
 
 export const withTimer = (order) =>{
-    const o = order.json();
+    const o = order.toJSON();
     o.seconds_left = o.status === 'pending'
     ? Math.max(0, Math.floor((new Date(o.expires_at) - Date.now()) / 1000))
     : 0
@@ -57,7 +57,7 @@ export const createOrder = async (req, res) => {
                 where: {user_id: req.user.id, status: 'pending', expires_at: {[Op.gt]: now}},
                 transaction: t
             });
-            if(openOrders >= concert.order.maxPendingOrders) {
+            if(openOrders >= config.order.maxPendingOrders) {
                 throw new HttpError(400, 'You have to many unpaid orders, pay or cancel the unpaid one first');
             }
 
@@ -121,25 +121,80 @@ export const createOrder = async (req, res) => {
     }
 } 
 
+// export const getMyOrders = async (req, res) => {
+//     try {
+//         const {page, limit, offset} = getPagination(req, query)
+//         const where = {user_id: req.user.id};
+//         if(req.query.status){
+//              where.status = req.query.status};
+//         const {rows, count} = await OrderTicket.findAndCountAll({
+//             where, 
+//             include: orderInclude,
+//             order: [['created_at', 'DESC']],
+//             distinct: true,
+//             limit,
+//             offset
+//         });
+
+//         const mappedRows = rows.map(withTimer);
+//         const result = paginated(
+//             mappedRows,
+//             count,
+//             page,
+//             limit
+//         );
+
+//        return success(res, result, 'Orders fetched');
+//     } catch (err) {
+//             console.error("GET MY ORDERS ERROR:", err);
+//         return error(res, err.message, 500)
+//     }
+// }
+
+
 export const getMyOrders = async (req, res) => {
     try {
-        const {page, limit, offset} = getPagination(req, query)
-        const where = {user_id: req.user.id};
-        if(req.query.status) where.status = req.query.status;
+        // 1. Get pagination parameters
+        const { page, limit, offset } = getPagination(req.query);
 
-        const {rows, count} = await OrderTicket.findAndCountAll({
-            where, 
+        // 2. Filter orders belonging to the logged-in user
+        const where = { user_id: req.user.id };
+
+        // 3. Apply optional status filter
+        if (req.query.status) {
+            where.status = req.query.status;
+        }
+
+        // 4. Retrieve orders from database
+        const { rows, count } = await OrderTicket.findAndCountAll({
+            where,
             include: orderInclude,
             order: [['created_at', 'DESC']],
             distinct: true,
             limit,
             offset
         });
-        return success(res, paginated(rows.map(withTimer), count, page, limit ), 'Order fetched');
+
+        // 5. Map orders and add timer information
+        const mappedRows = rows.map(withTimer);
+
+        // 6. Construct paginated response
+        const result = paginated(
+            mappedRows,
+            count,
+            page,
+            limit
+        );
+
+        return success(res, result, 'Orders fetched');
+
     } catch (err) {
-        return error(res, err.message, 500)
+        console.error('GET MY ORDERS ERROR:', err);
+
+        return error(res, err.message, 500);
     }
-}
+};
+
 
 export const getOrderById = async (req, res) => {
     return success(res, withTimer(req.order), 'Order Fetched')
