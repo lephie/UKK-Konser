@@ -31,6 +31,10 @@ const OrderTicket = sequelize.define('OrderTicket', {
     type: DataTypes.STRING(200),
     allowNull: true
   },
+  payment_ref: {
+  type: DataTypes.STRING(200),
+  allawNull: true
+  },
   expires_at: {
     type: DataTypes.DATE,
     allowNull: true

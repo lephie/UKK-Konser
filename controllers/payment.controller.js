@@ -63,6 +63,10 @@ export const checkStatus = async (req, res) => {
             }
         }
 
+        if(!order.payment_ref){
+            return error(res, 'Order doesnt have payment reference', 409)
+        }
+
         const fresh = await OrderTicket.findByPk(order.id);
         return success(res, {
             order_id: fresh.id,
