@@ -48,6 +48,7 @@ export const login = async (req, res) =>{
         if (!user.is_active) return error(res, 'Account deactivated', 403);
 
         const token = authService.generateToken({ id: user.id, role: user.role });
+      
         return success(res, { token, id: user.id, role: user.role, name: user.name }, 'Login successful');
     } catch (err) {
         return error(res, err.message, 500);
@@ -84,5 +85,32 @@ export const changePassword = async (req, res) => {
     }
 };
 
+export const updateProfile = async (req, res) => {
+    try {
+        const {name, phone} = req.body ?? {};
+        const values = {};
 
-export default {register, login, getMe, logout, changePassword }
+        if(name !== undefined){
+            const n = String(name).trim();
+            if(!n) return error(res, 'Name cannot be empty', 400);
+            if(n.length > 100) return error(res, 'Characters cannot be more than 100', 400);
+            values.name = n;
+        }
+        if(phone !== undefined){
+            const p = String(phone).trim();
+            if (p && !/^[0-9+\-\s]{8,20}$/.test(p)) return error(res, 'phone number is not valid', 400);
+            values.phone = p || null;
+        }
+        if(Object.keys(values).length === 0) return error('Nothing to update', 400);
+
+        const user = await User.findByPk(req.user.id);
+        await user.update(values)
+        const {password, ...safe} = user.toJSON();
+        return success(res, safe, 'Profile Updated')
+    } catch (err) {
+        return error(res, err.message, 500)
+    }
+}
+
+
+export default {register, login, getMe, logout, changePassword, updateProfile }

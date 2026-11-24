@@ -1,4 +1,4 @@
-import  Concert  from "../models/index.js";
+import  {Concert}  from "../models/index.js";
 
 export const presentConcert = (concert) =>{
     const c = typeof concert.get === 'function'

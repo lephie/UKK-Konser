@@ -203,7 +203,7 @@ export const publishConcert = async (req, res) =>{
     }
 }
 
-export const cancelConcert = async (res, req) =>{
+export const cancelConcert = async (req, res) =>{
     try {
         const concert = await findOwnedConcert(req.params.id, req.user.id)
         if(!concert) return error(res, 'Concert not found', 404);
@@ -244,7 +244,7 @@ export const cancelConcert = async (res, req) =>{
     }
 }
 
-export const deleteConcert = async (res, req) =>{
+export const deleteConcert = async (req, res) =>{
     try {
         const concert = await findOwnedConcert(req.params.id, req.user.id);
         if(!concert) return error(res, "Concert not found", 404);
