@@ -6,3 +6,5 @@ node_modules/
 .env.*
 # Keep your template visible so teammates know what variables to use
 !.env.example
+
+uploads/

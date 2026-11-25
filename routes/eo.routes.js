@@ -6,6 +6,7 @@ import { getDashboard } from "../controllers/eo.controller.js";
 import { cancelConcert, createConcert, deleteConcert, getMyConcert, getMyConcertById, publishConcert, updateConcert } from "../controllers/concert.controller.js";
 import { createTier, deleteTier, getTiers, updateTier } from "../controllers/ticketTier.controller.js";
 import express from 'express';
+import { uploadLayout } from "../middleware/upload.js";
 
 
 const router = express.Router()
@@ -20,10 +21,10 @@ router.put('/profile', updateProfile);
 router.get('/dashboard', getDashboard);
 
 //concers
-router.post('/concerts', createConcert);
+router.post('/concerts', uploadLayout, createConcert);
+router.put('/concerts/:id', uploadLayout, updateConcert);
 router.get('/concerts', getMyConcert);
 router.get('/concerts/:id', getMyConcertById);
-router.put('/concerts/:id', updateConcert);
 router.delete('/concerts/:id', deleteConcert)
 router.patch('/concerts/:id/publish', publishConcert);
 router.patch('/concerts/:id/cancel', cancelConcert);

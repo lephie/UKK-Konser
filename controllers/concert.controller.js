@@ -6,6 +6,8 @@ import { dateValidate, missingFields } from "../utils/validate.js";
 import { getPagination, paginated } from "../utils/pagination.js";
 import { findOwnedConcert, presentConcert } from "../services/concert.service.js";
 import { notifyMany } from "../services/notification.service.js";
+import { dateValidate, missingFields, parseMapUrl } from "../utils/validate.js";
+import { layoutPath, removeUploaded } from "../middleware/upload.js";
 
 
 export const getAllConcert = async (req, res) => {
@@ -74,14 +76,20 @@ export const getConcertById = async (req, res) => {
 };
 
 export const createConcert = async (req, res) => {
+    const uploaded = layoutPath(req.file);
+    // any rejection after the file was saved must also delete the file
+    const bad = (msg, code = 400) => { removeUploaded(uploaded); return error(res, msg, code); };
     try {
         const body = req.body ?? {};
         const missing = missingFields(body, ['title', 'venue', 'location', 'date']);
-        if(missing.length) return error(res, `Missing fields: ${missing.join(', ')}`, 400);
+        if (missing.length) return bad(`Missing fields: ${missing.join(', ')}`);
 
         const date = dateValidate(body.date);
-        if(!date) return error(res, 'date is not valid date', 400);
-        if(date <= new Date()) return error(res, 'Concert date must be in the future', 400);
+        if (!date) return bad('date is not valid date');
+        if (date <= new Date()) return bad('Concert date must be in the future');
+
+        const map = parseMapUrl(body.map_url);
+        if (map.problem) return bad(map.problem);
 
         const concert = await Concert.create({
             title: String(body.title).trim(),
@@ -90,15 +98,18 @@ export const createConcert = async (req, res) => {
             location: String(body.location).trim(),
             date,
             banner_url: body.banner_url ?? null,
+            layout_url: uploaded,
+            map_url: map.value,
             status: 'draft',
             created_by: req.user.id
         });
 
         return success(res, concert, 'Concert created as draft', 201);
     } catch (err) {
-        return error(res, err.message, 500)
+        removeUploaded(uploaded);
+        return error(res, err.message, 500);
     }
-}
+};
 
 // fitur fitur EOEOEOEO
 
@@ -137,39 +148,49 @@ export const getMyConcertById = async (req, res) =>{
     }
 }
 
-export const updateConcert = async (req, res) =>{
+export const updateConcert = async (req, res) => {
+    const uploaded = layoutPath(req.file);
+    const bad = (msg, code = 400) => { removeUploaded(uploaded); return error(res, msg, code); };
     try {
         const concert = await findOwnedConcert(req.params.id, req.user.id);
-        if(!concert) return error(res, 'Concert not found', 404)
-        if(concert.status === 'cancelled') return error(res, 'This concert already cancelled, cannot be edited', 400);
+        if (!concert) return bad('Concert not found', 404);
+        if (concert.status === 'cancelled') return bad('This concert already cancelled, cannot be edited');
 
         const body = req.body ?? {};
         const updates = {};
-        for(const field of ['title', 'description', 'venue', 'location', 'banner_url']){
-            if(body[field] !== undefined) updates[field] = body[field];
+        for (const field of ['title', 'description', 'venue', 'location', 'banner_url']) {
+            if (body[field] !== undefined) updates[field] = body[field];
         }
-        if(body.date !== undefined){
+        if (body.date !== undefined) {
             const date = dateValidate(body.date);
-            if(!date) return error(res, 'date is not valid date', 400);
-            if(date <= new Date()) return error(res, 'date must be for future concert', 400);
+            if (!date) return bad('date is not valid date');
+            if (date <= new Date()) return bad('date must be for future concert');
             updates.date = date;
         }
-        if(Object.keys(updates).length === 0) return error(res, 'Nothing to update', 400);
+        if (body.map_url !== undefined) {
+            const map = parseMapUrl(body.map_url);
+            if (map.problem) return bad(map.problem);
+            updates.map_url = map.value;
+        }
 
-        const scheduleChanged = 
-        (updates.date && updates.date.getTime() !== new Date(concert.date).getTime()) ||
-        (updates.venue && updates.venue !== concert.venue) ||
-        (updates.location && updates.location !== concert.location);
+        const oldLayout = concert.layout_url;
+        if (uploaded) updates.layout_url = uploaded;
+        else if (body.remove_layout === 'true') updates.layout_url = null;
+
+        if (Object.keys(updates).length === 0) return bad('Nothing to update');
+
+        const scheduleChanged =
+            (updates.date && updates.date.getTime() !== new Date(concert.date).getTime()) ||
+            (updates.venue && updates.venue !== concert.venue) ||
+            (updates.location && updates.location !== concert.location);
 
         await concert.update(updates);
+        if ('layout_url' in updates) removeUploaded(oldLayout);   // old file no longer used
 
-        // notif buat yang udah beli timket
-        if(scheduleChanged && concert.status === 'published'){
+        if (scheduleChanged && concert.status === 'published') {
             const buyers = await OrderTicket.findAll({
-                where: {concert_id: concert.id, status: 'paid'},
-                attributes: ['user_id'],
-                group: ['user_id'],
-                raw: true
+                where: { concert_id: concert.id, status: 'paid' },
+                attributes: ['user_id'], group: ['user_id'], raw: true
             });
             await notifyMany(
                 buyers.map((b) => b.user_id),
@@ -180,10 +201,10 @@ export const updateConcert = async (req, res) =>{
 
         return success(res, concert, 'Concert updated');
     } catch (err) {
-        return error(res, res.message, 500);
+        removeUploaded(uploaded);
+        return error(res, err.message, 500);
     }
 };
-
 export const publishConcert = async (req, res) =>{
     try {
         const concert = await findOwnedConcert(req.params.id, req.user.id);

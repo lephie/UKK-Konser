@@ -32,6 +32,14 @@ const Concert = sequelize.define('Concert', {
     type: DataTypes.STRING(500),
     allowNull: true
   },
+  layout_url: { 
+    type: DataTypes.STRING(500),
+    allowNull: true 
+  },
+  map_url: {
+    type: DataTypes.STRING(1000),
+    allowNull: true
+  },
   status: {
     type: DataTypes.ENUM('draft', 'published', 'cancelled'),
     allowNull: true,

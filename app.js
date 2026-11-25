@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import routes from './routes/index.js';
 import { error } from './utils/response.js';
+import { UPLOAD_ROOT } from './middleware/upload.js';
 
 const app = express()
 
@@ -12,6 +13,8 @@ app.use((req, res, next) => {
 });
 
 app.get('/health', (req, res) => res.json({status: 'ok'}))
+
+app.use('/uploads', express.static(UPLOAD_ROOT));
 
 app.use('/api', routes)
 

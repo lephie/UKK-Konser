@@ -40,3 +40,4 @@ INSERT INTO concert (title, description, venue, location, date, banner_url, stat
 ('Senandung Pantai Live', 'Konser akustik santai dengan suasana pantai dan musisi indie pilihan.', 'Pantai Losari Open Stage', 'Makassar', '2027-03-06 16:00:00', 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800', 'published', @eo, NOW()),
 ('Langit Senja Music Festival', 'Festival musik multi-genre menjelang senja bersama puluhan penampil.', 'Lapangan Gasibu', 'Bandung', '2026-11-22 15:00:00', 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=800', 'cancelled', @eo, NOW());
 
+package : multer for image saved in folder
