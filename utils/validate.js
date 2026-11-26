@@ -17,3 +17,24 @@ export const dateValidate = (value) =>{
     const d = new Date(value);
     return Number.isNaN(d.getTime()) ? undefined : d;
 }
+
+export const parseMapUrl = (value) => {
+    if (value === undefined || value === null || String(value).trim() === '') return { value: null };
+    let raw = String(value).trim();
+    const iframe = raw.match(/src=["']([^"']+)["']/i);
+    if (iframe) raw = iframe[1];
+    try {
+        const u = new URL(raw);
+        const hostOk = ['www.google.com', 'google.com', 'maps.google.com'].includes(u.hostname);
+        if (u.protocol !== 'https:' || !hostOk || !u.pathname.startsWith('/maps')) {
+            return { problem: 'map_url must be a Google Maps embed link' };
+        }
+        if (u.pathname !== '/maps/embed') {
+            return { problem: 'Use the embed link: Google Maps > Share > Embed a map > copy the src' };
+        }
+        if (u.toString().length > 1000) return { problem: 'map_url is too long (max 1000 chars)' };
+        return { value: u.toString() };
+    } catch {
+        return { problem: 'map_url is not a valid URL' };
+    }
+};
