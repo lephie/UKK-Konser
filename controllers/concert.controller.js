@@ -2,7 +2,6 @@ import { Op } from "sequelize";
 import { Concert, User, TicketTier, OrderTicket, Ticket } from "../models/index.js";
 import {success, error} from "../utils/response.js";
 import {cancelOrder} from "../services/order.service.js"
-import { dateValidate, missingFields } from "../utils/validate.js";
 import { getPagination, paginated } from "../utils/pagination.js";
 import { findOwnedConcert, presentConcert } from "../services/concert.service.js";
 import { notifyMany } from "../services/notification.service.js";
