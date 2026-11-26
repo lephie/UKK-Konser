@@ -1,7 +1,7 @@
 
 import { authMiddleware } from '../middleware/auth.js';
 import roleMiddleware from '../middleware/role.js';
-import { approveEO, createEO, getAllConcert, getAllEO, getAllOrders, getAllUser, getDashboard, rejectEO, removeConcert, statusUser } from '../controllers/admin.controller.js';
+import { approveEO, createEO, getAllConcert, getAllEO, getAllOrders, getAllUser, getConcertById, getDashboard, rejectEO, removeConcert, statusUser } from '../controllers/admin.controller.js';
 import express from 'express';
 
 
@@ -21,6 +21,7 @@ router.patch('/eo/:id/approve', approveEO);
 router.patch('/eo/:id/reject', rejectEO);
 
 router.get('/concert', getAllConcert);
+router.get('/concert/:id', getConcertById);
 router.delete('/concert/:id', removeConcert);
 
 router.get('/orders', getAllOrders);

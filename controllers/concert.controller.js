@@ -18,7 +18,7 @@ export const getAllConcert = async (req, res) => {
         const dateFilter = {[Op.gte]: new Date()}; // gte = greater than / equal >=
         if(date_from){
             const from = dateValidate(date_from)
-            if(form == undefined) return error(res, "date_from not valid date", 400);
+            if(from == undefined) return error(res, "date_from not valid date", 400);
             if(from > dateFilter[Op.gte]) dateFilter[Op.gte] = from;
         }
 

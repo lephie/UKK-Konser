@@ -157,6 +157,23 @@ export const getAllConcert = async (req, res) => {
     }
 }
 
+export const getConcertById = async (req, res) => {
+    try {
+        // admin sees every status (draft / published / cancelled)
+        const concert = await Concert.findByPk(req.params.id, {
+            include: [
+                { model: User, as: 'organizer', attributes: ['id', 'name', 'email'] },
+                { model: TicketTier, as: 'tiers' }
+            ]
+        });
+        if (!concert) return error(res, 'Concert not found', 404);
+
+        return success(res, presentConcert(concert), 'Concert fetched successfully');
+    } catch (err) {
+        return error(res, err.message, 500);
+    }
+};
+
 export const removeConcert = async (req, res) => {
     try {
         const concert = await Concert.findByPk(req.params.id);
