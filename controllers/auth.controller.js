@@ -112,5 +112,30 @@ export const updateProfile = async (req, res) => {
     }
 }
 
+export const updateAvatar = async (req, res) => {
+    try {
+        if (!req.file) {
+            return error(res, 'Please select an image', 400);
+        }
 
-export default {register, login, getMe, logout, changePassword, updateProfile }
+        const user = await User.findByPk(req.user.id);
+        if (!user) {
+            return error(res, 'User not found', 404);
+        }
+
+        const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+        await user.update({
+            avatar_url: avatarUrl
+        });
+
+        return success(
+            res, user.toSafeJSON(),'Profile picture updated'
+        );
+
+    } catch (err) {
+        return error(res, err.message, 500);
+    }
+};
+
+
+export default {register, login, getMe, logout, changePassword, updateProfile, updateAvatar }

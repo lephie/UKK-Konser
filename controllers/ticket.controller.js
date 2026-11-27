@@ -1,11 +1,12 @@
-import { Concert, TicketTier, Ticket } from '../models/index.js';
+import { Concert, TicketTier, Ticket, OrderDetail } from '../models/index.js';
 import { qrToDataURL } from '../services/qr.service.js';
 import { success, error } from '../utils/response.js';
 import { getPagination, paginated } from '../utils/pagination.js';
 
 const ticketInclude = [
     { model: Concert, as: 'concert', attributes: ['id', 'title', 'date', 'venue', 'location', 'banner_url', 'status'] },
-    { model: TicketTier, as: 'tier', attributes: ['id', 'name'] }
+    { model: TicketTier, as: 'tier', attributes: ['id', 'name'] },
+    { model: OrderDetail, as: 'detail', attributes: ['id', 'order_id'] }
 ];
 
 // GET /tickets?status=unused|used|cancelled &concert_id=   ("My Tickets")
@@ -20,6 +21,7 @@ export const getMyTickets = async (req, res) => {
             where,
             include: ticketInclude,
             order: [['id', 'DESC']],
+            distinct: true,
             limit,
             offset
         });
