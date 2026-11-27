@@ -13,5 +13,6 @@ router.get('/getMe', authMiddleware, authController.getMe);
 router.patch('/password', authMiddleware, authController.changePassword);
 router.patch('/profile', authMiddleware, authController.updateProfile);
 router.post('/avatar', authMiddleware, uploadAvatar , authController.updateAvatar);
+router.post("/google", googleAuth);
 
 export default router

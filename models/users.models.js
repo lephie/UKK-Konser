@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, ENUM } from 'sequelize';
 import sequelize from  '../config/database.js';
 
 const User = sequelize.define('User', {
@@ -15,6 +15,15 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(150),
     allowNull: false,
     unique: true
+  },
+  google_id: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    unique: true,
+  },
+  auth_provider: {
+    type: ENUM('local','google'),
+    defaultValue: 'local',
   },
   password: {
     type: DataTypes.STRING(100),

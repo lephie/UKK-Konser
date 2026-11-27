@@ -2,6 +2,7 @@ import { User } from '../models/index.js';
 import authService from '../services/auth.service.js';
 import {success, error} from '../utils/response.js';
 import { isEmail, missingFields } from '../utils/validate.js';
+import {verifyGoogleIdToken,findOrCreateGoogleUser,} from '../services/googleAuth.service.js';
 
 export const register = async (req , res) => {
     try {
@@ -137,5 +138,33 @@ export const updateAvatar = async (req, res) => {
     }
 };
 
+async function googleAuth(req, res, next) {
+  try {
+    // Support both { idToken } and { credential } (in case web sends Google's `credential` field)
+    const idToken = req.body.idToken || req.body.credential;
 
-export default {register, login, getMe, logout, changePassword, updateProfile, updateAvatar }
+    const googleProfile = await verifyGoogleIdToken(idToken);
+    const result = await findOrCreateGoogleUser(
+      googleProfile,
+      userModel,
+      (user) => generateToken({ id: user.id, email: user.email, role: user.role })
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Google authentication successful",
+      data: result, // { token, user }
+    });
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({
+        success: false,
+        message: error.message,
+      });
+    }
+    return next(error);
+  }
+}
+
+
+export default {register, login, getMe, logout, changePassword, updateProfile, updateAvatar, googleAuth }
